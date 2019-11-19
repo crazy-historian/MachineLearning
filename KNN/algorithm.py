@@ -21,13 +21,7 @@ class DataArray:
                 new_iris = np.array([(data[4], (data[:4]))], dtype=self.type)
                 self.array = np.append(self.array, new_iris)
         except IOError:
-            print('C файлом что-то не так')
-
-    def metrics(self, list_a, list_b):
-        summary = np.float32(0.0)
-        for a, b in zip(list_a, list_b):
-            summary += (a - b) ** 2
-        return np.sqrt(summary)
+            print('-- file error -- ')
 
     def __repr__(self):
         print(self.array)
@@ -36,15 +30,23 @@ class DataArray:
         return self
 
     def __next__(self):
-        if self.index < self.array.__len__()-1:
+        if self.index < self.array.__len__() - 1:
             self.index += 1
             return self.array[self.index]
         else:
             raise StopIteration
+
+def metrics(list_a, list_b):
+    summary = np.float32(0.0)
+    for a, b in zip(list_a, list_b):
+        summary += (a - b) ** 2
+    return np.sqrt(summary)
 
 
 if __name__ == "__main__":
     iris_array = DataArray()
     iris_array.read_file('iris.csv')
     for iris in iris_array:
-        print(iris)
+        print(iris['parameters'])
+        result = metrics([0.0, 0.0, 0.0, 0.0],iris['parameters'])
+        print('Расстояние: ', result)
